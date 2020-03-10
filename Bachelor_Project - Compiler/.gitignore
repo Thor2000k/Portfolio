@@ -1,0 +1,23 @@
+# Don't track content of these folders
+
+# Compiled source #
+###################
+*.o
+*.log
+compiler
+*.fls
+*.aux
+*.fdb_latexmk
+*.synctex.gz
+*.output
+*.bin
+out
+out.as
+out.o
+project_code/tests/assembler/*
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+.vscode/ipch/*/*.ipch
+.vscode/ipch/*/*.bin

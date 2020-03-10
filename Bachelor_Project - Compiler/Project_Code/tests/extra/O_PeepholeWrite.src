@@ -1,0 +1,41 @@
+var x:int, y:int;
+
+# Following statements should be detected and changed through 
+# the peephole optimization. You can use the -nph flag to disable it.
+# This program has writes to check output.
+
+x = 2;
+
+# Multiplication of 2 -> shift left
+write x * 2;
+write 2 * x;
+
+# Multiplication of 1 -> assignment of x
+write x * 1;
+write 1 * x;
+
+# Addition of 1 -> increment x
+write x + 1;
+write 1 + x;
+x++;
+write x;
+x = x - 1;
+
+# Multiplication of 0 -> assignment of 0
+write x * 0;
+write 0 * x;
+
+# Addition of 0 -> assignment of x
+write x + 0;
+write 0 + x;
+
+# Subtraction of 0 -> assignment of x
+write x - 0;
+
+# Subtraction of 0 -> negation of x
+write 0 - x;
+
+# Subtraction of 1 -> decrement x
+write x - 1;
+x--;
+write x;

@@ -1,0 +1,10 @@
+var x:int, y:bool;
+
+x = 1000000;
+
+while 0 < x do
+{
+    x = x - 1;
+}
+
+write 1;

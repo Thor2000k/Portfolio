@@ -1,0 +1,11 @@
+# Testing negative values
+var x:int, y:int;
+
+x = 2 * -1;
+y = 2 - x;
+
+write -x;
+write |x|;
+write y;
+
+write 2 - -4;

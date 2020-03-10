@@ -1,0 +1,27 @@
+# Creates many arrays which would require more space 
+# than possible without garbage collection. 
+type A = array of int;
+
+# Each array is 16 + 1000 * 8 = 8016 bytes in memory
+func get_array(n:int):A
+var a:A, i:int;
+{
+    allocate a of length 1000;
+    for i = 0; i < 1000; i++ do
+        a[i] = n;
+
+    return a;
+}
+end get_array
+
+var i:int, j:int, sum:int, a:A;
+var c:int, p:int;
+
+for i = 0; i < 1000000; i++ do
+{    
+    a = get_array(i);
+    for j = 0; j < 1000; j++ do
+        sum = sum + a[j];
+}
+
+write sum;

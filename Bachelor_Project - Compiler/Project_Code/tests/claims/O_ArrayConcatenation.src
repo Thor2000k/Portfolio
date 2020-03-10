@@ -1,0 +1,87 @@
+# Plus can be overloaded for array concatenation.
+# It can also be easly done using copy statement.
+
+type A = array of int;
+
+# Uses + overload
+func concA(a:A, b:A):A
+{
+    # Compiles to code similar to concB
+    return a + b;
+}
+end concA
+
+# Uses copy statements
+func concB(a:A, b:A):A
+var c:A;
+{
+    # Copy A, B; copies all elements in A to the beginning of B.
+    # Copy A, i, B, j, s; copies s elements starting at 
+    # index i from A to B starting at index j.
+    # Copy has O(1) checks and uses the fast string operation instruction movsb
+
+    allocate c of length |a| + |b|;
+
+    copy a, c;
+    copy b, 0, c, |a|, |b|;
+    return c; 
+}
+end concB
+
+# Non-extension method
+func concC(a:A, b:A):A
+var c:A, i:int, j:int;
+{
+    allocate c of length |a| + |b|; 
+
+    while i < |a| do
+    {
+        c[j] = a[i];
+        i = i + 1;
+        j = j + 1;
+    }
+
+    i = 0;
+    while i < |b| do
+    {
+        c[j] = b[i];
+        i = i + 1;
+        j = j + 1;
+    }
+
+    return c;
+}
+end concC
+
+func compare(a:A, b:A, c:A):bool
+var i:int, j:int, s:int, t:bool;
+{
+    s = |a|;
+    t = true;
+
+    for i = 0; i < s; { i++; j++; } do
+        t = t && a[i] == c[j];
+
+    s = |b|;
+    for i = 0; i < s; { i++; j++; } do
+        t = t && b[i] == c[j];
+
+    return t;
+}
+end compare
+
+var a:A, b:A, i:int, j:int;
+
+allocate a of length 10;
+allocate b of length 17;
+
+j = 1;
+for i = 0; i < |a|; { i++; j++; } do 
+    a[i] = j;
+
+for i = 0; i < |b|; { i++; j++; } do 
+    b[i] = j;
+
+if compare(a, b, concA(a, b)) then write 1; else write 0;
+if compare(a, b, concB(a, b)) then write 1; else write 0;
+if compare(a, b, concC(a, b)) then write 1; else write 0;

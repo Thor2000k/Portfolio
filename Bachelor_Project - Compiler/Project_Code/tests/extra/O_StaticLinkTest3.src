@@ -1,0 +1,29 @@
+# this file will fail when using -ss
+func foo():int
+    func bar():int
+    var i:int;
+    {
+        y = 2;
+        while i < 10 do
+        {
+            y = y + 2;
+            x = x + 2;
+            i = i + 1;
+        }
+        return 0;
+    }
+    end bar
+var y:int;
+{
+    void = bar();
+    write y;
+    return 0;
+}
+end foo
+
+var x:int, void:int;
+
+x = 1;
+void = foo();
+
+write x;

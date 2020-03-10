@@ -1,0 +1,8 @@
+# Demostrating case of running out of registers. Will cause compiler to
+# abort due to no spill being supported.
+var x:int;
+
+x = 2;
+
+# 
+write (x + 1) + ((x + 1) + ((x + 1) + ((x + 1) + ((x + 1) + ((x + 1) + ((x + 1) + (x + 1)))))));

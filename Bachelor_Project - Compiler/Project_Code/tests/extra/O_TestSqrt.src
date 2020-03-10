@@ -1,0 +1,6 @@
+var i:int, c:int;
+
+for i = 1;, i < 10000, i++; do
+    if i != sqrt(i * i) then c++;
+
+write c;

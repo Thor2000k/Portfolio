@@ -1,0 +1,109 @@
+type A = array of int;
+type AA = array of A;
+
+func foo(n:int, s:int):AA
+var i:int, j:int, a:A, aa:AA;
+{
+    allocate aa of length s;
+    for j = 0; j < s; j++ do
+    {
+        allocate a of length 10;
+        aa[j] = a;
+
+        for i = 0; i < 10; { i++; n++; } do
+            a[i] = n; 
+    }
+
+    return aa;
+}
+end foo
+
+# Uses copy statements
+func concB(a:A, b:A):A
+var c:A;
+{
+    # Copy A, B; copies all elements in A to the beginning of B.
+    # Copy A, i, B, j, s; copies s elements starting at 
+    # index i from A to B starting at index j.
+    # Copy has O(1) checks and uses the fast string operation instruction movsb
+
+    allocate c of length |a| + |b|;
+
+    copy a, c;
+    copy b, 0, c, |a|, |b|;
+    return c; 
+}
+end concB
+
+# Non-extension method
+func concC(a:A, b:A):A
+var c:A, i:int, j:int;
+{
+    allocate c of length |a| + |b|; 
+
+    while i < |a| do
+    {
+        c[j] = a[i];
+        i = i + 1;
+        j = j + 1;
+    }
+
+    i = 0;
+    while i < |b| do
+    {
+        c[j] = b[i];
+        i = i + 1;
+        j = j + 1;
+    }
+
+    return c;
+}
+end concC
+
+func printAA(aa:AA):int
+var i:int, void:int;
+{
+    for i = 0; i < |aa|; i++ do 
+        void = printA(aa[i]);
+
+    return 1;
+}
+end printAA
+
+func printA(a:A):int
+var i:int;
+{
+    for i = 0; i < |a|; i++ do
+        write a[i];
+    
+    return 1;
+}
+end printA
+
+var a:A, b:AA, aa:AA, i:int, j:int, void:int;
+
+aa = foo(10, 10);
+a = aa[0];
+
+void = printAA(aa);
+write 25000000;
+    
+for i = 1; i < |aa|; i++ do
+{ 
+    # b = a + aa[i];
+
+    void = printA(a);
+    write 44000000;
+    if (i == 8) then
+        if true then
+            write 55555;
+
+    b = aa[i];
+    a = a + b;
+    void = printA(a);
+    
+    write 10000000;
+}
+
+write 25000000;
+void = printAA(aa);

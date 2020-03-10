@@ -1,0 +1,16 @@
+# Reads a table from the Table.xml file, use ./out < Table.xml
+
+var i:int, n:int, e:int, sum:int;
+
+# Our read skips anything that is not a number, 
+# so can be used to read from complex files. 
+# If read reaches the end of the file, it will return 0.
+
+read n;
+for i = 0; i < n; i++ do
+{
+    read e;
+    sum = sum + e;
+}
+
+write sum;

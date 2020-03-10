@@ -1,0 +1,19 @@
+# Liveness can be printed using the -dl flag
+
+func foo(a:int, b:int):int
+var s:int, i:int;
+{
+    s = a;
+    for i = 1; i < b; i++ do
+        s = s * a; 
+
+    return s;
+}
+end foo
+
+var x:int, y:int;
+x = 2;
+y = 3;
+
+# Live temps get stored on function call and their registers can then be reused
+write (x + 1) * ((y - 1) * foo(2 * x, y + 1)) + (10 * x);

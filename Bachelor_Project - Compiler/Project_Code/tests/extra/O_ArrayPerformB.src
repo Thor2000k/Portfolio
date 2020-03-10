@@ -1,0 +1,20 @@
+type A = array of int;
+var a:A, b:A, c:A, i:int, j:int, n:int, first:bool;
+
+read n;
+allocate a of length n;
+allocate b of length n;
+
+j = 1;
+
+n = |a|;
+for i = 0;, i < n, { i++; j++; } do
+    a[i] = j;
+
+n = |b|;
+for i = 0;, i < n, { i++; j++; } do
+    b[i] = j;
+
+c = a + b;
+
+write |c|;

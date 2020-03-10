@@ -1,0 +1,53 @@
+# This program will not function with the -ss flag for simple
+# assignment of static links. You can use O_Knapsack.src 
+# as an example of performance gain from using -ss. 
+
+func foo():int
+var y:int;
+    func get_x(set_x:bool):int
+    {
+        y = 0;
+        x = 0;
+
+        if !set_x then
+            y = 20;
+        else
+            x = 10;
+        
+        # because x was used last in else, 
+        # it is not updated here when using -ss
+        return x;
+    }
+    end get_x
+
+    func get_sum(n:int):int
+    var sum:int, i:int;
+    {
+        y = 10;
+        x = 1;
+
+        # x is the last used before the while 
+
+        for i = 0; i < n; i++ do
+        {
+            # x does not get updated here when using -ss
+            sum = sum + x;
+            sum = sum + y;
+        }
+
+        return sum;
+    }
+    end get_sum
+{
+    # expects 0
+    write get_x(false);
+
+    # expects 22
+    write get_sum(2);
+    return 1;
+}
+end foo
+
+var x:int, void:int;
+
+void = foo();

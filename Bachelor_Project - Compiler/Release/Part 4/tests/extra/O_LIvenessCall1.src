@@ -1,0 +1,16 @@
+
+func foo(a:int, b:int):int
+{
+    return a + b;
+}
+end foo
+
+var x:int;
+
+x = 3;
+
+# How it should be allocated (check compilled file)
+x = x + (x + 1);
+
+# How it is allocated with function call
+write x + (x + 1) - foo(x, x + 1);

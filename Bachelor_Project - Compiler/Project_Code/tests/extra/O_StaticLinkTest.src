@@ -1,0 +1,44 @@
+# Uses static link instead of parameters
+func fib_sum():int
+    func fib():int
+    var t:int, a:int, b:int;
+    {
+        if x == 0 || x == 1 then
+        {
+            return 1;
+        }
+        else
+        {
+            t = x;
+            
+            x = t - 1;
+            a = fib();
+
+            x = t - 2;
+            b = fib();
+            
+            x = t;
+            return a + b;
+        }
+    }
+    end fib
+var f:int, s:int;
+{    
+    while x <= N do
+    {
+        f = fib();
+        write f;
+        s = s + f;
+        x = x + 1;
+    }
+
+    return s;
+}
+end fib_sum
+
+var N:int, x:int;
+
+x = 0;
+N = 10;
+
+write fib_sum();

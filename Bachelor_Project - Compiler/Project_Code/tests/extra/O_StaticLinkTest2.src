@@ -1,0 +1,30 @@
+# A more common way of implementing fibonacci
+func fib_sum(x:int, N:int):int
+    func fib(x:int):int
+    {
+        if x == 0 || x == 1 then
+            return 1;
+        else
+            return fib(x - 1) + fib(x - 2);
+    }
+    end fib
+var f:int, s:int;
+{    
+    while x <= N do
+    {
+        f = fib(x);
+        write f;
+        s = s + f;
+        x = x + 1;
+    }
+
+    return s;
+}
+end fib_sum
+
+var N:int, x:int;
+
+x = 0;
+N = 10;
+
+write fib_sum(x, N);

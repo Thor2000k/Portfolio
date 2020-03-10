@@ -1,0 +1,19 @@
+var x:int, y:int, z:int, a:int, b:int;
+
+x = 2;              # rdi
+y = 5;              # rsi
+z = 10;             # rdx
+a = 1;              # rcx
+b = -1;             # r8
+
+x = b + a * y;      # x = 4;
+y = a + y;          # y = 6;
+z = z * x;          # z = 40;
+a = a + a;          # a = 2;
+b = b / b;          # b = 1;
+
+write x;
+write y;
+write z;
+write a;
+write b;

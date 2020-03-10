@@ -1,0 +1,25 @@
+
+func IsPrime(x:int):bool
+var m:int;
+{
+    m = 3;
+    if x == 2 then return true;
+    else if x == (x / 2) * 2 then return false;
+    while (m < x && !(x == (x / m) * m)) do m = m + 2;
+    return m >= x;
+}
+end IsPrime
+
+var n:int, i:int, count:int;
+
+n = 100000;
+i = 2;
+while i <= n do
+{
+    if IsPrime(i) then
+        count = count + 1;
+
+    i = i + 1;
+}
+
+write count;

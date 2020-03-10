@@ -1,0 +1,19 @@
+type A = array of int;
+var a:A, b:A, c:A, i:int, j:int;
+
+allocate a of length 140;
+allocate b of length 200;
+
+j = 1;
+
+for i = 0;, i < |a|, { i++; j++; } do
+    a[i] = j;
+
+for i = 0;, i < |b|, { i++; j++; } do
+    b[i] = j;
+
+c = a + b;
+write |c|;
+
+for i = 0;, i < |c|, i++; do
+    write c[i];

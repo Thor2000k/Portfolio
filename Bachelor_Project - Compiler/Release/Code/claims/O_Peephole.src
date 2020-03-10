@@ -1,0 +1,36 @@
+var x:int, y:int;
+
+# Following statements should be detected and changed through 
+# the peephole optimization. You can use the -nph flag to disable it.
+# No expected output to make the assembler file easy to read.
+
+# Multiplication of 2 -> shift left
+y = x * 2;
+y = 2 * x;
+
+# Multiplication of 1 -> assignment of x
+y = x * 1;
+y = 1 * x;
+
+# Addition of 1 -> increment x
+y = x + 1;
+y = 1 + x;
+x++;
+
+# Multiplication of 0 -> assignment of 0
+y = x * 0;
+y = 0 * x;
+
+# Addition of 0 -> assignment of x
+y = x + 0;
+y = 0 + x;
+
+# Subtraction of 0 -> assignment of x
+y = x - 0;
+
+# Subtraction of 0 -> negation of x
+y = 0 - x;
+
+# Subtraction of 1 -> decrement x
+y = x - 1;
+x--;

@@ -1,0 +1,9 @@
+
+func foo():int
+{
+    if true then
+        return 42;
+}
+end foo
+
+write foo();

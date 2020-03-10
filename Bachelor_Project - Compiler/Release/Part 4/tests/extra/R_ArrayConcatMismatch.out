@@ -1,0 +1,16 @@
+# Array concat mismatch
+
+type intArray = array of int;
+type boolArray = array of bool; 
+
+var a : intArray, c : int Array, b : boolArray; 
+
+allcate a of length 2
+allcate b of length 2
+a[0] = 4;
+a[1] = 5;
+
+b[0] = true; 
+b[1] = false; 
+
+c = a + b; 

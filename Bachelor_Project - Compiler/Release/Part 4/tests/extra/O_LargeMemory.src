@@ -1,0 +1,64 @@
+type a = array of int;
+type array_list = record of {size:int, inner:a};
+
+func init_list(start_size:int):array_list
+var list:array_list;
+{
+    allocate list;
+    allocate list.inner of length start_size;
+    list.size = 0;
+    return list;
+}
+end init_list
+
+func add(list:array_list, value:int):int
+    func increase():int
+    var new_inner:a, i:int;
+    {
+        allocate new_inner of length size * 2;
+        while i < size do
+        {
+            new_inner[i] = inner_cache[i];
+            i = i + 1;
+        }
+
+        list.inner = new_inner;
+        inner_cache = new_inner;
+        return 1;
+    }
+    end increase
+var inner_cache:a, size:int;
+{    
+    inner_cache = list.inner;
+    size = list.size;
+    if size == |inner_cache| then
+        void = increase();
+
+    inner_cache[size] = value;
+    list.size = size + 1;
+
+    return 1;
+}    
+end add
+
+func test(list:array_list, count:int, size:int):int
+var i:int;
+{
+    write 100;
+    write count;
+
+    while i < size do
+    {
+        void = add(list, i);
+        i = i + 1;
+    }
+
+    return test(list, count + 1, list.size);
+}
+end test
+
+var void:int, list:array_list, size:int;
+size = 1000;
+
+list = init_list(size);
+void = test(list, 1, size);

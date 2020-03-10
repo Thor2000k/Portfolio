@@ -1,0 +1,27 @@
+type a = int;
+type b = a;
+type c = b;
+
+#type d = e;
+#type e = d;
+
+type bar = record of { x:a, y:c, next:head };
+type head = record of { x:a, y:c, next:bar };
+
+var z:bar;
+
+func foo(x:int, y:b):bar
+var z:bar;
+{
+    allocate z;
+    z.x = x;
+    z.y = x * y;
+    z.next = null;
+    return z;
+}
+end foo
+
+z = foo(2, 5 - 1);
+
+write z.x;
+write z.y;

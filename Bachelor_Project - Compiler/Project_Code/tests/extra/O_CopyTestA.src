@@ -1,0 +1,15 @@
+# copy test
+
+type intArray = array of int;
+
+var a : intArray, b : intArray; 
+allocate a of length 4;
+
+a[0] = 1;
+a[1] = 2;
+a[2] = 3;
+a[3] = 4; 
+
+copy a, b; 
+
+write b[1]; 

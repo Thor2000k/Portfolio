@@ -1,0 +1,142 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+
+\usepackage{pifont}
+\usepackage{times}
+\usepackage{listings}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1ex plus .1ex minus .1ex}
+\setlength{\itemsep}{0ex}
+
+\DeclareFontFamily{OT1}{cmbig}{}
+\DeclareFontShape{OT1}{cmbig}{m}{n}{ <-> cmssbx10 }{}
+%\newcommand{\bigfont}{\usefont{OT1}{cmbig}{m}{n}}
+%\newcommand{\MyHuge}[1]{{\bigfont\fontsize{3cm}{3.3cm}\selectfont #1}}
+\newcommand{\bigfont}{\usefont{OT1}{cmbig}{m}{n}}
+\newcommand{\MyHuge}[1]{{\bigfont\fontsize{2.2cm}{2.42cm}\selectfont #1}}
+\allowdisplaybreaks
+%lader allign fylder mere end 1 side. 
+\begin{document}
+
+\thispagestyle{empty}
+
+\begin{center}
+{\LARGE\bf Bachelor Project in Compiler Construction}
+{\LARGE\bf February 2019}
+\\[10ex]
+{\Large\bf Report from group GROUPNUMBER: 9 }
+\\[2ex]
+{\Large\bf Anton Nørgaard (antno16), Bjørn Glue Hansen (bhans09) \& Thor Skjold Haagensen (thhaa16)}
+\end{center}
+
+\setcounter{page}{0}
+
+\newpage
+
+\section{Introduction}
+
+%\subsection{Clarifications}
+% Har I haft brug for at foretage nogle præciseringer i sprogdefinitionen? Forklar.
+
+\subsection{Limitations}
+% Har I bevidst lavet nogle begrænsninger i jeres version af sproget?  Hvad skyldes det?Hvad er følgerne?
+Our compiler doesn't support any structural equivalence check for records associated with an id. Instead when two type id's associated with a record are compared, the address of the their symbol is compared. If the id's are identical, but the addresses are different, then the two symbols are stored in different symbol tables/scopes and shouldn't be considered the same. Our reasoning is that if a user has two structural equivalent types but declare them twice, then it must be because they did not want them to be considered equivalent.
+
+\subsection{Extensions}
+% Har I lavet nogle udvidelser i jeres version af sproget?   Hvad var jeres motivation?Hvad er følgerne?
+We have added the option for negative values in the form of sugarcoating. The minus token "-" can be put before a term, e.g. "-a" and it will be saved in the ASM tree as "0 - a". 
+
+\subsection{Implementation Status}
+% Hvad er status af jeres implementation?  Er alle de foresl ̊aede funktionaliteter imple-menterede? Er de afprøvede? Virker de?
+The compiler functions as intended. 
+
+\section{Parsing Extra}
+\subsection{Sugarcoating}
+% Behandler I syntaktisk sukker under parsningen? Hvordan og hvorfor?
+
+\subsection{Weeding}
+% Udluger I uønskede syntakstræer? Hvordan og hvorfor?
+Currently the compiler checks for return paths, matching id for "func id ... end id" and reduce literal expressions. The check for return paths is fairly conservative, ignoring expressions and only looking at specific statements. Both statements in the rule "if exp then statement else statement" are checked and if they both return on all paths, the if statement is regarded as also returning on all paths. Meanwhile "if" and "while" statements are never considered, even if they have constant expressions. 
+
+Checking for matching id is already done during parsing in the bison file and make\_function(). From the rule "head body tail", make\_function() receives the id in "func id" from head and the id in "end id". If they don't match, a global variable is set to 0, so the compiler knows it shouldn't continue.
+
+Any expression consisting of literals are reduced during weeding, e.g. "true \&\& false" becomes "true" and "a + 6 * 5" becomes "a + 30". This helps reduce the size of the ASM tree and the code generated in future phases. The weeding is done after type checking so we know the types are compatible.
+\section{Symbol Table Extra}
+\subsection{Scope Rules}
+% Angiv eventuelle afklaringer af scopereglerne i jeres sprog.
+
+
+\subsection{Symbol Data}
+%Beskriv indholdet af symboltabellens indgange.
+
+\subsection{Algorithm}
+% Beskriv jeres algoritme til at opbygge symboltabeller og checke scoperegler.
+
+\section{Typecheck}
+
+\subsection{Types}
+% Beskriv de typer, som jeres sprog understøtter.
+It is a policy of the compiler that we will allow a file to compile if it lacks sufficient return statements, but emit a warning if so. The general principle for checking if a function returns is that it has a list of statements and if at least one of them has a valid return statement, the function validly returns\\
+
+
+When deciding the validity of a function's return statement three cases occur. The simplest is that the function has a basic return statement, in this case verifying is simple. \\
+If the return statement lies in an if then else statement then both the if and the else part must have a return statement or the return statement must be outside of the if and else.\\ 
+Finally if the statement we check is a list of statements, a return statement must be found in this list.\\
+In order to ensure that a function is defined and ends with the same identifier name, 
+
+A few of the significant changes we've made to the symbol table is we have added more information to each symbol in the table. Namely, we've added a kind to what the symbol denotes, e.g whether it is a variable, function, type, etc. And included the values function and type, which we can use to validate whether a value is used correctly or if a function has a proper definition/use
+
+\subsection{Extentions to the language}
+So far, we have added support for unary minus in the language. The idea behidn the implementation is that in the parser file, a minus followed by an expression is intepreted as the constant 0 minus the value of the expression
+
+\subsection{Changes to the symbol table}
+A few of the significant changes we've made to the symbol table is we have added more information to each symbol in the table. Namely, we've added a kind to what the symbol denotes, e.g whether it is a variable, function, type, etc. And included the values function and type, which we can use to validate whether a value is used correctly or if a function has a proper definition/use
+
+\underline{Ensuring correctness of expressions and terms}
+We assert if an expression is correct via traversal of the symbol table. For example, when checking the validity of a declaration, we would for a particular declaration get the kind of declaration and put it in the current relevant symbol table scope. If there already is an equivalent entry, we would thow an error.
+
+We perform a breadth-first search, going deeper and deeper in the abstract syntax tree, using the relevant scope to check if the semantic values are correct.
+
+\subsection{Type Rules}
+There is no support for operator overloading and we have implemented operators according to the "default" rules e.g addition is only defined for numerical values and variables with numerical values.
+
+The most significant type rules are that we disallow cyclic type declarations e.g if we have two types a and b, we would disallow
+$
+type a = b; \\
+type b = a; \\
+$
+To ensure that no cyclic type declarations occur in a source code program, what we do in the weeding phase of type checking, is that as we go through the AST, we mark it as being defined when we first encounter a type's declaration. If we at any pointer during checking what the different types are encounter a type declaration as being of a type already marked, it means that they are cyclically defined and it throws a warning message
+
+\subsection{Algorithm}
+%Beskriv jeres algoritme for at checke typeregler.
+For instance, the rule
+% \begin{lstlisting}
+% var_type:        ID ":" type
+%                { $$ = make_var_type($1, $3); }
+% \end{lstlisting}
+
+% \ding{51} is check mark and \ding{55} is X mark.
+
+\subsection{Test}
+Below table shows the results of the tests. Op is an abbreviation for binary operators.\\
+\begin{tabular}{| l | l | l | c |}
+	\hline
+	\textbf{\#} & \textbf{Test} & \textbf{Expected Result} & \textbf{Pass} \\ 
+	\hline
+	\hline
+	& \multicolumn{2}{l}{Parsing.sh: Boolean Precedence Tests} & \\
+	\hline
+	1 & Boolean ops are left most associative. & Inner parentheses around first op. & \ding{51} \\
+	\hline
+	2 & \&\& op has higher precedence than & Inner parentheses around \&\& op. & \ding{51} \\
+	  & $\mid\mid$ op. & & \\
+	\hline
+	\hline
+	& \multicolumn{2}{l}{Parsing.sh: Comparison Association Tests} & \\
+	\hline
+\end{tabular}
+
+\end{document}
+

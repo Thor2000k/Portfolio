@@ -1,0 +1,43 @@
+type A = array of int;
+
+func get_array(n:int):A
+var a:A, i:int;
+{
+    allocate a of length 1000;
+
+    while i < 1000 do
+    {
+        a[i] = n;
+        i = i + 1;
+    }
+
+    return a;
+}
+end get_array
+
+var i:int, j:int, sum:int, a:A;
+var c:int, p:int;
+
+while i < 1000000 do
+{
+    (*
+    c = i / 1000;
+    if c > p then
+    {
+        write c;
+        p = c;
+    }
+    *)
+    
+    a = get_array(i);
+    j = 0;
+    while j < |a| do
+    {
+        sum = sum + a[j];
+        j = j + 1;
+    }
+
+    i = i + 1;
+}
+
+write sum;

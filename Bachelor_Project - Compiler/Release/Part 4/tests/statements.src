@@ -1,0 +1,16 @@
+var x:int, y:int, z:int;
+
+x = 5;
+y = 10;
+z = 2;
+
+if (x + 10 > 0) then
+    if (x - y * z < 0) then
+    {
+        write 0;
+        write 1;
+        write 0;
+    }
+    else
+        write 1;
+        

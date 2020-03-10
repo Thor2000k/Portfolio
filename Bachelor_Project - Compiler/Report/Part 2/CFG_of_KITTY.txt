@@ -1,0 +1,68 @@
+<function>          : F
+<head>              : H
+<tail>              : TA
+<type>              : T
+<par_decl_list>     : PD
+<var_decl_list>     : VD
+<var_type>          : VT
+<body>              : B
+<decl_list>         : DL
+<declaration>       : D
+<statement.list>    : SL
+<statement>         : S
+<varaible>          : V
+<expression>        : E
+<term>              : TE
+<act_list>          : AL
+<exp_list>          : EL
+
+
+F  -> H B TA
+H  -> func id(PD):T
+TA -> end id
+T  -> id
+T  -> int
+T  -> bool
+T  -> array of T
+T  -> record of{VD}
+PD -> VD
+PD -> ''
+VD -> VT,VD
+VD -> VT
+VT -> id:T
+B  -> DL SL
+DL -> D DL
+DL -> ''
+D  -> type id = T;
+D  -> F
+D  -> var VD;
+SL -> S
+SL -> S SL
+S  -> return E;
+S  -> write E;
+S  -> allocate V;
+S  -> allocate V of length E;
+S  -> V=E;
+S  -> if E then S
+S  -> if E then S else S
+S  -> while E do S
+S  -> {SL}
+V  -> id
+V  -> V[E]
+V  -> V.id
+E  -> E op E
+E  -> TE
+TE -> V
+TE -> id(AL)
+TE -> (E)
+TE -> !TE
+TE -> |E|
+TE -> num
+TE -> true
+TE -> false
+TE -> null
+AL -> EL
+AL -> ''
+EL -> E
+EL -> E,EL
+

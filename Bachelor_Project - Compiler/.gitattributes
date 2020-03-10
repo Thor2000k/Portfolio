@@ -1,0 +1,4 @@
+*.sh -lf
+*.src -lf
+*.out -lf
+*.as -lf

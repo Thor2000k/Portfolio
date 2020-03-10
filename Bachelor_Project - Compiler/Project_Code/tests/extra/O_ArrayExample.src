@@ -1,0 +1,21 @@
+
+type A = array of int;
+
+var a:A, b:A, c:A; 
+var i:int, j:int;
+
+allocate a of length 10;
+allocate b of length 10;
+
+for ; i < |a|; { i++; j++; } do
+    a[i] = j;
+
+for i = 0; i < |b|; { i++; j++; } do
+    b[i] = j;
+
+allocate c of length |a| + |b|;
+copy a, c;
+copy b, 0, c, |a|, |b|;
+
+for i = 0; i < |c|; i++ do
+    write c[i];

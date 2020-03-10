@@ -1,0 +1,224 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{times}
+\usepackage{wrapfig}
+\usepackage{adjustbox}
+\usepackage{fourier} 
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1ex plus .1ex minus .1ex}
+\setlength{\itemsep}{0ex}
+
+\DeclareFontFamily{OT1}{cmbig}{}
+\DeclareFontShape{OT1}{cmbig}{m}{n}{ <-> cmssbx10 }{}
+%\newcommand{\bigfont}{\usefont{OT1}{cmbig}{m}{n}}
+%\newcommand{\MyHuge}[1]{{\bigfont\fontsize{3cm}{3.3cm}\selectfont #1}}
+\newcommand{\bigfont}{\usefont{OT1}{cmbig}{m}{n}}
+\newcommand{\MyHuge}[1]{{\bigfont\fontsize{2.2cm}{2.42cm}\selectfont #1}}
+
+
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+%\lstavoidwhitepre
+\lstdefinestyle{CStyle}{
+	%%backgroundcolor=\color{backgroundColour},   
+	commentstyle=\color{mGreen},
+	keywordstyle=\color{blue},
+	numberstyle=\tiny\color{mGray},
+	stringstyle=\color{mPurple},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2,
+	language=C
+}
+\lstset{style=CStyle}
+
+\begin{document}
+
+\thispagestyle{empty}
+
+\begin{center}
+{\LARGE\bf Bachelor Project in Compiler Construction}
+\\[15ex]
+\MyHuge{Symbol Table}
+\\[15ex]
+{\LARGE\bf May 2019}
+\\[10ex]
+{\Large\bf Report from group 9:}
+\\[2ex]
+{\Large\bf Anton Nørgaard (antno16), Bjørn Glue Hansen (bhans09) \& Thor Skjold Haagensen (thhaa16)}
+\end{center}
+
+\setcounter{page}{0}
+
+\newpage
+
+\section{Introduction}
+
+%\subsection{Clarifications}
+
+%\subsection{Limitations}
+
+%\subsection{Extensions}
+
+\subsection{Implementation Status}
+The current implementation is based on not knowing the language that is going to be compiled. Some assumptions regarding scope rules has been made and can be found in section 2.1. The program functions as intended and passes all tests. Most parameters are not currently tested for correct input, e.g. that pointers are not NULL. The symbol table doesn't currently have a method for deallocating memory, it will be added later.
+
+\section{The Symbol Table}
+
+\subsection{Scope Rules}
+The current implementation is made without knowledge of the language to be compiled. It does have some assumptions about about the scope rules.
+
+%\begin{center}[H]
+
+  \begin{tabular}{| l | l |}
+    \hline
+    Rule & Description \\ \hline
+     Recursive scope expansion & Only symbols in the current scope, main scope or in the path \\ 
+     & from the current scope to the main scope, can be used. \\  \hline
+    Most local first & If there are multiple symbols with the same identifier, the \\
+     & most local symbol is selected. \\ \hline
+    Cannot init symbol if another & A symbol can not be initialized in a scope that already has \\
+     symbol has the same identifier & a symbol with the same identifier. \\ 
+    \hline
+  \end{tabular}
+
+%\end{center}
+
+
+
+% \subsection{Symbol Data}
+
+\subsection{ Data Structure }
+A single scope is represented as a hash table. This allows for O(1) look up and insertion time in a single scope, assuming the symbols have been distributed evenly. The scopes are connected in a tree structure, but it is only possible to traverse the tree in one direction. A node can access its parent, but a parent can not access its child nodes. A leaf is the most local scope, while the root is the global scope.
+
+When looking up a symbol, it is first searched for in the current scope, if it is not found there it is looked up in the parent of the scope. This continues until either a symbol has been found or after checking the global scope. If the symbol could not be found in any of the scopes, then it is assumed to be an error in the source code. 
+
+\newpage
+\subsection{implementation specifics}
+Currently a symbol can only have int as a value. This is mainly because the symbol table is currently implemented without taking into account the language that it should compile. In the future the value will likely be a union of different types that can be expected and an enum will be added to keep track of the current type.
+
+The hash table starts at a small size of 11 and will resize itself when this condition is met $T / A \geq log_{10}(A)$, with $A$ being the size of the internal array and $T$ the number of symbols in the table. The reason for making the upper bound dynamic, is to ensure that the hash table resizes quickly at a small size, but allow for a higher number of collisions and less wasted space in the array at a larger size. 
+
+The size of the array is always a prime to avoid common divisors between the hashed string and the modulus when calculating the hashed index. The prime is found by first multiplying the original array size by some constant $n_{i+1} = cA$ and then find the lowest prime larger than the result $p_{i+1} \geq n_{i+1}$. A number is checked if prime by using the naive algorithm with some optimizations, resulting in a run time of O($\sqrt{n}$). Compared to rehashing all of the symbols for the new array, finding the prime will not be the dominant aspect of resizing and doesn't need further optimization.
+
+
+% The symbol table in our code is an arraylist, implemented as a group of void pointers that we set to be symbol names as we hash to them. As we initialize and re-size the arraylist, we chose a prime number as the size of the table, as it provides a low probability of a collision.
+
+\subsection{Tests, their motivations and results}
+We test the tables' methods using the test\_symbol\_table.c file. Here, we create a root table and two child tables, using the  scope\_symbol\_table() method. We test if any of the child tables has lost the reference to the parent. It is reasonable to expect that this behavior will be similar for larger symbol tables as well.
+
+In this test, we also ensure that in the event that two tables have a variable with the same name, get\_symbol() finds the \underline{first} table that has the variable. Specifically, in the event that we look for a symbol named x, starting from child table 1, it should be found in child table 1 and since child 2 in this test does not have a symbol named x, it should be found in the root table. We again use the same principle as before i.e it will work for larger tables.
+
+On the next page is a list of some of the tests in test\_symbol\_table.c and their results.
+
+%\begin{center}[H]
+\begin{tabular}{| l | l | l |}
+    \hline
+    \textbf{Test} & \textbf{Expected Result} & \textbf{Actual Result} \\ 
+    \hline
+    put symbol in table    & dump of table has the symbol & dump of table has the symbol \\ \hline
+    get previous symbol    & the symbol is printed        & the symbol is printed \\ 
+    \hline 
+    put symbol with same   & dump has a symbol in both    & dump has a symbol in both\\  
+    name in child table    & tables                       & tables \\ 
+    \hline
+    init multiple scopes   & both scopes point to the     & both scopes point to the \\
+    from same table        & same table                   & same table \\ 
+    \hline
+    put symbol in child    & dump shows that both symbols & dump shows that both symbols \\  
+    that has same name as  & are in the expected scopes   & are in the expected scopes \\
+    symbol in parent       &                              & \\
+    \hline
+    get symbol that has    & get method returns the       & get method returns the \\
+    the same identifier    & correct symbol               & correct symbol \\
+    as a symbol in the     & & \\
+    parent scope           & & \\
+    \hline
+    get symbol that only   & get the symbol from the      & got the symbol from the \\  
+    exists in parent scope & parent                       & parent. \\
+    \hline
+    try to get symbol that & Can not find child and       & Can not find child and \\
+    is in a different      & instead get an error message & instead get an error message \\
+    child of the parent    &                              & \\
+    scope                  &                              & \\
+    \hline
+%	\hline
+%	\thead{Test} & \thead{Expected result} & \thead{Actual result} & \thead{Conclusion?} \\ \hline
+%	\tScopeSymbolTable()  & \thead{The Child tables 1 and 2 \\ has the initial table as parent table} & %\thead {both tables 1 and 2 
+% has the root table as parent table}  & the hierarchy of tables work\\ \hline
+%	\thead{Starting from table 1, we find} & 8 & 9 \\ 
+%	\hline
+\end{tabular}
+
+%\end{center}
+
+
+\section{Conclusion}
+The symbol table passes all tests and works as currently intended. It will need to be modified in the future to support the environment of the chosen language and the usage by other modules. More error checking could be added to help understand potential problems when the symbol table is used by other modules. A method for deallocation should also be added to avoid memory leaks.
+\newpage
+
+\appendix
+
+\section{Source Code}
+%%
+\textbf{Makefile}
+\lstinputlisting[language=C]{src/Makefile}
+%%
+\textbf{memory.h}
+\lstinputlisting[language=C]{src/include/memory.h}
+%%
+\textbf{memory.c}
+\lstinputlisting[language=C]{src/memory.c}
+%%
+\textbf{array\_list.h}
+\lstinputlisting[language=C]{src/include/array_list.h}
+%%
+\textbf{array\_list.c}
+\lstinputlisting[language=C]{src/array_list.c}
+%%
+\textbf{prime\_generator.h}
+\lstinputlisting[language=C]{src/include/prime_generator.h}
+%%
+\textbf{prime\_generator.c}
+\lstinputlisting[language=C]{src/prime_generator.c}
+%%
+\textbf{symbol.h}
+\lstinputlisting[language=C]{src/include/symbol.h}
+%%
+\textbf{symbol.c}
+\lstinputlisting[language=C]{src/symbol.c}
+%%
+\textbf{test\_array\_list.c}
+\lstinputlisting[language=C]{src/test_array_list.c}
+%%
+\textbf{test\_symbol\_resize.c}
+\lstinputlisting[language=C]{src/test_symbol_resize.c}
+%%
+\textbf{test\_symbol\_table.c}
+\lstinputlisting[language=C]{src/test_symbol_table.c}
+
+
+
+
+
+
+
+
+\end{document}
